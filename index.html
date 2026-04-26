@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Reset 28</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- ── Auth ── -->
+  <div id="screen-auth" class="screen">
+    <div class="auth-logo">Reset 28</div>
+    <div class="auth-title">重新开始</div>
+    <div class="auth-sub">28天，找回属于你自己的节奏</div>
+    <div class="auth-form">
+      <input id="auth-name" class="input" type="text" placeholder="你的昵称">
+      <input id="auth-email" class="input" type="email" placeholder="邮箱">
+    </div>
+    <button id="auth-btn" class="btn btn-primary" onclick="handleRegister()">开始我的28天</button>
+    <p class="auth-toggle" id="auth-toggle-text">
+      已有账号？<span onclick="toggleAuthMode()">登录</span>
+    </p>
+  </div>
+
+  <!-- ── Complete Screen ── -->
+  <div id="screen-complete" class="screen">
+    <div class="complete-wrap">
+      <div class="complete-emblem">✨</div>
+      <div class="complete-label">Reset 28</div>
+      <div class="complete-title">28天。<br>你做到了。</div>
+      <div class="complete-body">
+        <p>这个 app 存在的意义只有一个——<br>降伴你走完这一段最难熬的路。</p>
+        <p>你没有崩溃。<br>你没有回头。<br>你一天一天地熊过来了。</p>
+        <p>那些凌晨三点的难眠，那些差点拿起手机的瞬间，那些一个人吃饭的晚上——你都熊过来了。</p>
+        <p>放下不是遗忘，而是你终于把位置还给了自己。</p>
+        <p>现在的你，已经不一样了。</p>
+      </div>
+      <div class="complete-streak" id="complete-streak">28 天</div>
+      <div class="complete-streak-label">断联天数</div>
+      <button class="btn btn-primary" style="margin-top:32px" onclick="window._fromComplete=true; showScreen('home')">&#8592; 回到首页</button>
+    </div>
+  </div>
+
+  <!-- ── Home ── -->
+  <div id="screen-home" class="screen">
+    <div class="home-header">
+      <div>
+        <div class="home-greeting">你好，</div>
+        <div class="home-name" id="home-name"></div>
+      </div>
+      <div class="home-settings" onclick="showScreen('settings'); renderSettings();">⚙</div>
+    </div>
+
+    <!-- Streak row -->
+    <div class="streak-row">
+      <div class="streak-card">
+        <div class="label">断联天数</div>
+        <div class="value-lg" id="home-streak">0</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:2px">/ 28 天</div>
+      </div>
+      <div class="streak-card">
+        <div class="label" id="emotion-label">今日情绪</div>
+        <div style="font-size:28px;font-weight:300;margin:4px 0" id="emotion-val">—</div>
+        <div class="emotion-bar-bg">
+          <div class="emotion-bar-fill" id="emotion-bar" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="padding: 0 16px 12px">
+      <span class="stage-badge stage-detox" id="home-stage">戒断期</span>
+    </div>
+
+    <!-- AI Feedback -->
+    <div class="ai-feedback" id="ai-feedback" style="display:none">
+      <div class="ai-feedback-text" id="ai-feedback-text"></div>
+    </div>
+
+    <!-- Tasks -->
+    <div class="card">
+      <div class="label" style="margin-bottom:4px">今日任务</div>
+      <div id="task-list"></div>
+    </div>
+
+    <!-- Actions -->
+    <button class="btn btn-primary" onclick="showScreen('log')">记录今天</button>
+    <button class="btn btn-danger" onclick="showScreen('sos')">我现在很难受 🔥</button>
+    <button class="btn btn-accent" onclick="showScreen('chat')">AI 闺蜜</button>
+  </div>
+
+  <!-- ── Log ── -->
+  <div id="screen-log" class="screen">
+    <div class="topbar">
+      <span class="topbar-back" onclick="showScreen('home')">← 返回</span>
+      <span class="topbar-title">记录今天</span>
+      <span></span>
+    </div>
+
+    <div class="log-section">
+      <div class="log-section-title">今天的情绪状态</div>
+      <div class="card" style="margin:0">
+        <div class="slider-val" id="slider-val">5</div>
+        <div class="hint" style="text-align:center;margin-bottom:12px">情绪值（1 低落 → 10 平稳）</div>
+        <div class="slider-wrap">
+          <input type="range" class="slider" id="emotion-slider" min="1" max="10" value="5">
+          <div class="slider-labels">
+            <span class="hint">低落</span>
+            <span class="hint">平稳</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="log-section">
+      <div class="log-section-title">今天和他的状态</div>
+      <div class="yn-row">
+        <button id="yn-no"   class="yn-btn" onclick="logRelapse=false;  updateYNButtons()">没有联系 ✓</button>
+        <button id="yn-urge" class="yn-btn" onclick="logRelapse='urge'; updateYNButtons()">想联系 🌊</button>
+        <button id="yn-yes"  class="yn-btn" onclick="logRelapse=true;   updateYNButtons()">联系了</button>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="submitLog()">提交记录</button>
+    <button class="btn btn-ghost" onclick="showScreen('home')">取消</button>
+  </div>
+
+  <!-- ── SOS ── -->
+  <div id="screen-sos" class="screen">
+    <div class="sos-header">
+      <div class="topbar-back" onclick="showScreen('home')" style="margin-bottom:16px">← 返回</div>
+      <div class="sos-title">现在感觉怎么了？</div>
+      <div class="caption">选择最接近你现在感受的状态</div>
+    </div>
+
+    <div class="emotion-chips">
+      <div class="chip" onclick="selectEmotion(this,'miss')">很想他 💭</div>
+      <div class="chip" onclick="selectEmotion(this,'hate')">很恨他 🔥</div>
+      <div class="chip" onclick="selectEmotion(this,'doubt')">很怀疑自己 🌀</div>
+      <div class="chip" onclick="selectEmotion(this,'lonely')">很孤独 🌙</div>
+    </div>
+
+    <button id="sos-generate-btn" class="btn btn-primary" style="display:none" onclick="generateSOS()">
+      生成急救方案
+    </button>
+
+    <div class="sos-result" id="sos-result" style="display:none">
+      <div class="sos-step">
+        <div class="sos-step-num">共情</div>
+        <div class="sos-step-text" id="sos-empathy"></div>
+      </div>
+      <div class="sos-step">
+        <div class="sos-step-num">现在可以做</div>
+        <div class="sos-step-text" id="sos-action"></div>
+      </div>
+      <div class="sos-step">
+        <div class="sos-step-num">推荐内容</div>
+        <div class="rec-list" id="sos-recs"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Chat ── -->
+  <div id="screen-chat" class="screen">
+    <div class="topbar">
+      <span class="topbar-back" onclick="showScreen('home')">← 返回</span>
+      <span class="topbar-title">AI 闺蜜</span>
+      <span></span>
+    </div>
+
+    <div class="chat-modes">
+      <button class="mode-chip active" data-mode="comfort"  onclick="switchChatMode('comfort')">安慰我</button>
+      <button class="mode-chip"        data-mode="rational" onclick="switchChatMode('rational')">理性分析</button>
+      <button class="mode-chip"        data-mode="block"    onclick="switchChatMode('block')">阻止我联系他</button>
+    </div>
+
+    <div class="chat-messages" id="chat-messages"></div>
+
+    <div class="chat-input-row">
+      <textarea class="chat-input" id="chat-input" placeholder="说说你现在的感受…" rows="1"></textarea>
+      <button class="chat-send" id="chat-send-btn" onclick="sendChat()">↑</button>
+    </div>
+  </div>
+
+  <!-- ── Settings ── -->
+  <div id="screen-settings" class="screen">
+    <div class="topbar">
+      <span class="topbar-back" onclick="showScreen('home')">← 返回</span>
+      <span class="topbar-title">设置</span>
+      <span></span>
+    </div>
+
+    <div class="card">
+      <div class="settings-item">
+        <span class="settings-label">昵称</span>
+        <span class="settings-value" id="settings-name"></span>
+      </div>
+      <div class="settings-item">
+        <span class="settings-label">邮箱</span>
+        <span class="settings-value" id="settings-email"></span>
+      </div>
+      <div class="settings-item">
+        <span class="settings-label">当前进度</span>
+        <span class="settings-value" id="settings-day"></span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="settings-item" onclick="showApiModal()">
+        <span class="settings-label">SiliconFlow API Key</span>
+        <span class="settings-value" id="settings-api">未设置</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="settings-item" onclick="simulateComplete()">
+        <span class="settings-label" style="color:var(--accent)">模拟完成第28天</span>
+        <span class="settings-value">预览完成页</span>
+      </div>
+      <div class="settings-item" onclick="resetProgress()">
+        <span class="settings-label" style="color:var(--danger)">重置进度</span>
+        <span class="settings-value">重新开始 Day 1</span>
+      </div>
+      <div class="settings-item" onclick="logout()">
+        <span class="settings-label" style="color:var(--text-secondary)">退出登录</span>
+        <span class="settings-value">→</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Bottom Nav ── -->
+  <nav id="bottom-nav">
+    <div class="nav-item active" data-screen="home" onclick="showScreen('home')">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">首页</span>
+    </div>
+    <div class="nav-item" data-screen="log" onclick="showScreen('log')">
+      <span class="nav-icon">📝</span>
+      <span class="nav-label">记录</span>
+    </div>
+    <div class="nav-item" data-screen="sos" onclick="showScreen('sos')">
+      <span class="nav-icon">🔥</span>
+      <span class="nav-label">急救</span>
+    </div>
+    <div class="nav-item" data-screen="chat" onclick="showScreen('chat')">
+      <span class="nav-icon">💬</span>
+      <span class="nav-label">闺蜜</span>
+    </div>
+  </nav>
+
+  <!-- ── Impulse Blocker Overlay ── -->
+  <div id="impulse-overlay">
+    <div class="impulse-card">
+      <div class="impulse-emoji">🌊</div>
+      <div class="impulse-title">先等一等</div>
+      <div class="impulse-body">
+        冲动只会持续几分钟。<br>
+        等计时结束后，如果你还想联系，<br>那再做决定也不迟。
+      </div>
+      <div class="impulse-timer" id="impulse-timer">10:00</div>
+      <div class="impulse-timer-label">冲动冷静倒计时</div>
+      <div class="impulse-actions">
+        <button class="btn btn-accent" onclick="closeImpulse(); showScreen('chat'); switchChatMode('block')">
+          和 AI 闺蜜说说
+        </button>
+        <button class="btn btn-secondary" onclick="closeImpulse()">
+          我已经冷静了
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── API Key Modal ── -->
+  <div id="api-modal">
+    <div class="api-modal-card">
+      <div class="api-modal-title">设置 SiliconFlow API Key</div>
+      <div class="api-modal-sub">
+        AI 功能需要你的 SiliconFlow API Key。<br>
+        Key 仅保存在本地，不会上传到任何服务器。
+      </div>
+      <input id="api-key-input" class="input" type="password" placeholder="请输入你的 API Key">
+      <br><br>
+      <button class="btn btn-primary" onclick="saveApiKey()">保存</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('api-modal').classList.remove('show')">取消</button>
+    </div>
+  </div>
+
+</div>
+<script src="app.js"></script>
+</body>
+</html>
