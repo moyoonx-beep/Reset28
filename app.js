@@ -1,4 +1,4 @@
-// ── Storage helpers ──────────────────────────────────────────────
+﻿// ── Storage helpers ──────────────────────────────────────────────
 const S = {
   get: k => JSON.parse(localStorage.getItem(k)),
   set: (k, v) => localStorage.setItem(k, JSON.stringify(v)),
@@ -465,44 +465,25 @@ function pickFresh(arr, usedList) {
   return arr[idx];
 }
 
+const EMPATHY_POOL = {
+  miss:   ['想他是真实的。不需要强迫自己不去想。','你现在的感受，是一个真实爱过的人才会有的。','想他不是软弱，是你还没完全关上那扇门。没关系。','你心里的他，是你爱过的人。这种感受很真实。','想念一个人是正常的。你不需要因此责怪自己。','你现在的痛苦，证明你真的爱过。这不是弱点。','允许自己想他。不需要强行切断所有情绪。','你心里的他占了很大的位置。放下需要时间，不是一天的事。','你现在的状态很正常。分手后想念对方，这是人类的本能。','你不是在思念他，你是在思念一段你以为完整的生活。','这种思念会慢慢变淡的。不需要强迫自己现在就放下。','你现在的感受就是你现在的真实。不需要假装没事。','想他的时候，也许你更想要的是那种被爱着的感觉。','你已经很努力了。想他不代表你失败了。','你的心还没准备好完全放下，这很正常。','你现在的感受就是你现在的真实。允许它存在。','想他的时候，记得你也在慢慢学会不依赖他。','你现在的痛是真实的。不需要强迫自己快点好起来。','你心里的他，是你爱过的人。这种感受很真实。','你不是在思念他，你是在思念一段你以为完整的生活。'],
+  hate:   ['你现在的愤怒是真实的。它存在是有原因的。','愤怒是悲伤的另一种出口。允许自己感受它。','你有权利愤怒。这不是不理性，是你在保护自己。','你的愤怒说明你知道自己应该得到更好的对待。','愤怒是一种力量。它在告诉你，你的边界被越过了。','你现在的感受很真实。不需要强迫自己平静下来。','愤怒是正常的。你不需要因此责怪自己。','你的愤怒说明你在乎。这是一种勇气。','允许自己愤怒。不需要假装原谅了。','你的愤怒是对的。你不需要将它合理化。','愤怒是悲伤的另一种出口。允许自己感受它。','你有权利愤怒。这不是不理性，是你在保护自己。','你的愤怒说明你知道自己应该得到更好的对待。','愤怒是一种力量。它在告诉你，你的边界被越过了。','你现在的感受很真实。不需要强迫自己平静下来。','愤怒是正常的。你不需要因此责怪自己。','你的愤怒说明你在乎。这是一种勇气。','允许自己愤怒。不需要假装原谅了。','你的愤怒是对的。你不需要将它合理化。','你有权利愤怒。这不是不理性，是你在保护自己。'],
+  doubt:  ['你现在的怀疑是真实的。但它不是事实。','怀疑自己不是你的错，是你太在乎这段关系了。','你的价值不取决于他是否选择你。','你现在的怀疑，是一段关系结束后很正常的反应。','你不是不够好。你只是遇到了不合适的人。','怀疑自己的时候，记得你已经很努力了。','你的价值不取决于他是否留下来。','你现在的怀疑是真实的。但它不是事实。','怀疑自己不是你的错，是你太在乎这段关系了。','你的价值不取决于他是否选择你。','你现在的怀疑，是一段关系结束后很正常的反应。','你不是不够好。你只是遇到了不合适的人。','怀疑自己的时候，记得你已经很努力了。','你的价值不取决于他是否留下来。','你现在的怀疑是真实的。但它不是事实。','怀疑自己不是你的错，是你太在乎这段关系了。','你的价值不取决于他是否选择你。','你现在的怀疑，是一段关系结束后很正常的反应。','你不是不够好。你只是遇到了不合适的人。','怀疑自己的时候，记得你已经很努力了。'],
+  lonely: ['孤独是真实的。你不需要假装它不存在。','一个人的时候很难熬。你现在的感受很真实。','孤独不是你的错。是你正在适应一种新的生活状态。','你现在的孤独，是你和自己相处的开始。','孤独是真实的。你不需要假装它不存在。','一个人的时候很难熬。你现在的感受很真实。','孤独不是你的错。是你正在适应一种新的生活状态。','你现在的孤独，是你和自己相处的开始。','孤独是真实的。你不需要假装它不存在。','一个人的时候很难熬。你现在的感受很真实。','孤独不是你的错。是你正在适应一种新的生活状态。','你现在的孤独，是你和自己相处的开始。','孤独是真实的。你不需要假装它不存在。','一个人的时候很难熬。你现在的感受很真实。','孤独不是你的错。是你正在适应一种新的生活状态。','你现在的孤独，是你和自己相处的开始。','孤独是真实的。你不需要假装它不存在。','一个人的时候很难熬。你现在的感受很真实。','孤独不是你的错。是你正在适应一种新的生活状态。','你现在的孤独，是你和自己相处的开始。'],
+};
+
 async function generateSOS() {
   if (!sosEmotion) return;
   document.getElementById('sos-generate-btn').textContent = '生成中…';
   document.getElementById('sos-generate-btn').disabled = true;
 
-  const emotionMap = { miss: '很想他', hate: '很恨他', doubt: '很怀疑自己', lonely: '很孤独' };
+  const used = sosUsed[sosEmotion];
+  const action  = pickFresh(ACTION_POOL, used.actions);
+  const empathy = pickFresh(EMPATHY_POOL[sosEmotion], used.music);
 
-  const pool   = RECS[sosEmotion] || RECS.lonely;
-  const music  = pool.filter(r => r.type === '音乐');
-  const movies = pool.filter(r => r.type === '电影');
-  const used   = sosUsed[sosEmotion];
-  const recs   = [ pickFresh(music, used.music), pickFresh(movies, used.movies) ];
-  const action = pickFresh(ACTION_POOL, used.actions);
-
-  document.getElementById('sos-empathy').textContent = '…';
-  document.getElementById('sos-action').textContent  = '…';
-  document.getElementById('sos-recs').innerHTML = recs.map(r => `
-    <div class="rec-item">
-      <div class="rec-type">${r.type}</div>
-      <div class="rec-name">${r.name}</div>
-    </div>`).join('');
+  document.getElementById('sos-empathy').textContent = empathy;
+  document.getElementById('sos-action').textContent  = action;
   document.getElementById('sos-result').style.display = 'block';
-
-  const apiKey = S.get('apiKey') || AI_API_KEY_DEFAULT;
-  const sosPrompt = `你是一个高情商的情感支持助手。用户现在感到“${emotionMap[sosEmotion]}”。用JSON回复，不要markdown代码块：{"empathy":"共情表达50字内，温柔克制，每次都要不一样"}。`;
-  try {
-    const res = await fetch(AI_API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-      body: JSON.stringify({ model: AI_MODEL, messages: [{ role: 'user', content: sosPrompt }], max_tokens: 100, temperature: 1.0, enable_thinking: false, stream: false })
-    });
-    const data = await res.json();
-    const parsed = JSON.parse(data.choices[0].message.content.trim());
-    document.getElementById('sos-empathy').textContent = parsed.empathy || '你现在的感受是真实的。';
-  } catch(e) {
-    document.getElementById('sos-empathy').textContent = '你现在的感受是真实的，允许自己感受它。';
-  }
-  document.getElementById('sos-action').textContent = action;
 
   document.getElementById('sos-generate-btn').textContent = '重新生成';
   document.getElementById('sos-generate-btn').disabled = false;
@@ -565,6 +546,7 @@ async function sendChat() {
   const input = document.getElementById('chat-input');
   const text = input.value.trim();
   if (!text) return;
+  if (!chatMode) { showToast('请先选择一个模式'); return; }
   input.value = '';
   input.style.height = 'auto';
 
@@ -641,8 +623,7 @@ async function callAI(prompt, messages, onChunk) {
 
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
-    let full = '';
-    let inThink = false;
+    let raw = '';
 
     while (true) {
       const { done, value } = await reader.read();
@@ -652,26 +633,15 @@ async function callAI(prompt, messages, onChunk) {
         if (!line.startsWith('data: ') || line === 'data: [DONE]') continue;
         try {
           const delta = JSON.parse(line.slice(6)).choices[0].delta.content;
-          if (!delta) continue;
-          // 过滤掉 <think>...</think> 思考块
-          let chunk = delta;
-          if (chunk.includes('<think>')) inThink = true;
-          if (inThink) {
-            if (chunk.includes('</think>')) {
-              inThink = false;
-              chunk = chunk.split('</think>').slice(1).join('');
-            } else {
-              continue;
-            }
-          }
-          if (chunk) {
-            full += chunk;
-            if (onChunk) onChunk(full);
-          }
+          if (delta) raw += delta;
         } catch(e) {}
       }
+      if (onChunk) {
+        const clean = raw.replace(/<think>[\s\S]*?<\/think>/g, '').trim();
+        if (clean) onChunk(clean);
+      }
     }
-    return full.trim();
+    return raw.replace(/<think>[\s\S]*?<\/think>/g, '').trim();
   } catch(e) {
     return '（网络错误，请检查连接）';
   }
@@ -744,12 +714,10 @@ function showToast(msg) {
 
 // ── Init ──────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  // Slider live update
   document.getElementById('emotion-slider').addEventListener('input', function() {
     document.getElementById('slider-val').textContent = this.value;
   });
 
-  // Chat input auto-resize + enter to send
   const chatInput = document.getElementById('chat-input');
   chatInput.addEventListener('input', function() {
     this.style.height = 'auto';
@@ -759,8 +727,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
   });
 
-  // Init chat - no default message, wait for mode selection
   chatMode = null;
-
   initAuth();
 });
