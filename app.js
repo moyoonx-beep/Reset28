@@ -510,9 +510,9 @@ async function generateSOS() {
 
 // ── AI Chat ───────────────────────────────────────────────────────
 const CHAT_MODES = {
-  comfort:  { label: '安慰我', system: '你是用户的AI闺蜜，高情商、温柔、有边界感。用户需要情感支持。请用温和但不煽情的方式回应，给出具体的安慰，不超过80字。' },
-  rational: { label: '理性分析', system: '你是用户的AI闺蜜，理性、清醒、有洞察力。请帮用户理性分析她的情感状况，不鼓励复联，给出客观建议，不超过100字。' },
-  block:    { label: '阻止我联系他', system: '用户现在很想联系前任。你是她的AI闺蜜，请用温和但坚定的方式阻止她，提醒她联系的代价，并给出一个替代行为建议，不超过80字。不要说教。' },
+  comfort:  { label: '安慰我', system: '你是用户的AI闺蜜，高情商、温柔、有边界感。用户选择了“安慰我”模式，说明她现在需要被理解和支持。每次回复必须：1)先共情她的感受 2)给出温柔具体的安慰 3)不超过80字。不煽情，不说教。' },
+  rational: { label: '理性分析', system: '你是用户的AI闺蜜，理性、清醒、有洞察力。用户选择了“理性分析”模式，说明她想要客观看清自己的情况。每次回复必须：1)帮她理清情绪背后的逻辑 2)不鼓励复联 3)给出客观建议 4)不超过100字。' },
+  block:    { label: '阻止我联系他', system: '用户选择了“阻止我联系他”模式，说明她现在很想联系前任。你是她的AI闺蜜，每次回复必须：1)明确告诉她现在不要联系 2)温和但坚定地说明联系的代价 3)给出一个具体的替代行动 4)不超过80字。不说教。' },
 };
 
 let chatHistory = [];
@@ -521,6 +521,11 @@ function renderChat() {
   document.querySelectorAll('.mode-chip').forEach(c => {
     c.classList.toggle('active', c.dataset.mode === chatMode);
   });
+  const hasMode = !!chatMode;
+  document.getElementById('chat-input').disabled = !hasMode;
+  document.getElementById('chat-send-btn').disabled = !hasMode;
+  const hint = document.getElementById('chat-mode-hint');
+  if (hint) hint.style.display = hasMode ? 'none' : 'block';
 }
 
 function switchChatMode(mode) {
@@ -631,12 +636,13 @@ async function callAI(prompt, messages, onChunk) {
     const res = await fetch(AI_API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-      body: JSON.stringify({ model: AI_MODEL, messages: msgs, max_tokens: 200, temperature: 0.8, enable_thinking: false, stream: true })
+      body: JSON.stringify({ model: AI_MODEL, messages: msgs, max_tokens: 300, temperature: 0.8, enable_thinking: false, stream: true })
     });
 
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
     let full = '';
+    let inThink = false;
 
     while (true) {
       const { done, value } = await reader.read();
@@ -646,14 +652,26 @@ async function callAI(prompt, messages, onChunk) {
         if (!line.startsWith('data: ') || line === 'data: [DONE]') continue;
         try {
           const delta = JSON.parse(line.slice(6)).choices[0].delta.content;
-          if (delta) {
-            full += delta;
+          if (!delta) continue;
+          // 过滤掉 <think>...</think> 思考块
+          let chunk = delta;
+          if (chunk.includes('<think>')) inThink = true;
+          if (inThink) {
+            if (chunk.includes('</think>')) {
+              inThink = false;
+              chunk = chunk.split('</think>').slice(1).join('');
+            } else {
+              continue;
+            }
+          }
+          if (chunk) {
+            full += chunk;
             if (onChunk) onChunk(full);
           }
         } catch(e) {}
       }
     }
-    return full;
+    return full.trim();
   } catch(e) {
     return '（网络错误，请检查连接）';
   }
@@ -741,8 +759,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
   });
 
-  // Init first chat message
-  appendMsg('ai', '我在这里。你想说什么都可以。');
+  // Init chat - no default message, wait for mode selection
+  chatMode = null;
 
   initAuth();
 });

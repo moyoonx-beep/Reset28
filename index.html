@@ -31,9 +31,9 @@
       <div class="complete-label">Reset 28</div>
       <div class="complete-title">28天。<br>你做到了。</div>
       <div class="complete-body">
-        <p>这个 app 存在的意义只有一个——<br>降伴你走完这一段最难熬的路。</p>
-        <p>你没有崩溃。<br>你没有回头。<br>你一天一天地熊过来了。</p>
-        <p>那些凌晨三点的难眠，那些差点拿起手机的瞬间，那些一个人吃饭的晚上——你都熊过来了。</p>
+        <p>这个 app 存在的意义只有一个——<br>陈伴你走完这一段最难熬的路。</p>
+        <p>你没有崩溃。<br>你没有回头。<br>你一天一天地熬过来了。</p>
+        <p>那些凌晨三点的难眠，那些差点拿起手机的瞬间，那些一个人吃饭的晚上——你都熬过来了。</p>
         <p>放下不是遗忘，而是你终于把位置还给了自己。</p>
         <p>现在的你，已经不一样了。</p>
       </div>
@@ -169,11 +169,13 @@
       <span></span>
     </div>
 
+    <div class="chat-mode-label">你现在需要——</div>
     <div class="chat-modes">
-      <button class="mode-chip active" data-mode="comfort"  onclick="switchChatMode('comfort')">安慰我</button>
-      <button class="mode-chip"        data-mode="rational" onclick="switchChatMode('rational')">理性分析</button>
-      <button class="mode-chip"        data-mode="block"    onclick="switchChatMode('block')">阻止我联系他</button>
+      <button class="mode-chip" data-mode="comfort"  onclick="switchChatMode('comfort')">&#128149; 安慰我</button>
+      <button class="mode-chip" data-mode="rational" onclick="switchChatMode('rational')">&#129504; 理性分析</button>
+      <button class="mode-chip" data-mode="block"    onclick="switchChatMode('block')">&#9995; 阻止我联系他</button>
     </div>
+    <div class="chat-mode-hint" id="chat-mode-hint">↑ 先选择一个模式，再开始聊天</div>
 
     <div class="chat-messages" id="chat-messages"></div>
 
